@@ -482,3 +482,5 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+/competra.wwwapi/appsettings.json
+/competra.wwwapi/appsettings.Development.json
