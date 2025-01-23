@@ -21,50 +21,54 @@ namespace competra.wwwapi.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Group-Activity relationship
-            modelBuilder.Entity<Group>()
-                .HasMany(g => g.Activities)
-                .WithOne()
-                .HasForeignKey(a => a.GroupId)
-                .OnDelete(DeleteBehavior.Cascade); // Optional: specify delete behavior
+            Seeder seeder = new Seeder();
+            modelBuilder.Entity<Activity>().HasData(seeder.ActivityList);
+            modelBuilder.Entity<User>().HasData(seeder.Users);
+            modelBuilder.Entity<Match>().HasData(seeder.MatchList);
+            modelBuilder.Entity<UserGroup>().HasData(seeder.UserGroupList);
+            modelBuilder.Entity<UserActivity>().HasData(seeder.UserActivityList);
+            modelBuilder.Entity<Group>().HasData(seeder.GroupList);
 
-            // Group-UserGroup relationship
-            modelBuilder.Entity<UserGroup>()
-                .HasKey(ug => new { ug.UserId, ug.GroupId }); // Composite key
+
+
+
+
+
 
             modelBuilder.Entity<UserGroup>()
-                .HasOne<Group>()
-                .WithMany()
+            .HasKey(ug => new { ug.UserId, ug.GroupId });
+
+            modelBuilder.Entity<UserGroup>()
+                .HasOne(ug => ug.User)
+                .WithMany(u => u.UserGroups)
+                .HasForeignKey(ug => ug.UserId);
+
+            modelBuilder.Entity<UserGroup>()
+                .HasOne(ug => ug.Group)
+                .WithMany(g => g.UserGroups)
                 .HasForeignKey(ug => ug.GroupId);
 
-            modelBuilder.Entity<UserGroup>()
-                .HasOne<User>()
-                .WithMany()
-                .HasForeignKey(ug => ug.UserId);
+            modelBuilder.Entity<Activity>()
+                .HasOne(a => a.Group)
+                .WithMany(g => g.Activities)
+                .HasForeignKey(a => a.GroupId);
 
-            // User-UserGroup relationship
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.UserGroups)
-                .WithOne()
-                .HasForeignKey(ug => ug.UserId);
-
-            // User-UserActivity relationship
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.UserActivities)
-                .WithOne()
+            modelBuilder.Entity<UserActivity>()
+                .HasOne(ua => ua.User)
+                .WithMany(u => u.UserActivities)
                 .HasForeignKey(ua => ua.UserId);
 
-            // Activity-UserActivity relationship
-            modelBuilder.Entity<Activity>()
-                .HasMany(a => a.UserActivities)
-                .WithOne()
+            modelBuilder.Entity<UserActivity>()
+                .HasOne(ua => ua.Activity)
+                .WithMany(a => a.UserActivities)
                 .HasForeignKey(ua => ua.ActivityId);
 
-            // Activity-Match relationship
-            modelBuilder.Entity<Activity>()
-                .HasMany(a => a.Matches)
-                .WithOne()
-                .HasForeignKey(m => m.ActivityId);
+            modelBuilder.Entity<Match>()
+                .HasOne(m => m.Activity)
+                .WithMany(a => a.Matches)
+                .HasForeignKey(m => m.ActivityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
 
 
         }

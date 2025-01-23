@@ -3,7 +3,7 @@
     public class UserActivity
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
+        public int UserId { get; set; }
         public double Elo { get; set; }
         public int ActivityId { get; set; }
         public Activity Activity { get; set; }

@@ -14,7 +14,7 @@ namespace competra.wwwapi.Data
 
         public Seeder()
         {
-            
+
             // Create Users
             User user1 = new User
             {
@@ -44,6 +44,7 @@ namespace competra.wwwapi.Data
             {
                 Id = 1,
                 GroupName = "Experis_aca",
+                LogoUrl = "",
                 CreatedAt = new DateOnly(2023, 1, 1)
             };
 
@@ -79,7 +80,7 @@ namespace competra.wwwapi.Data
             UserActivity userActivity1 = new UserActivity
             {
                 Id = 1,
-                UserId = user1.Id.ToString(),
+                UserId = user1.Id,
                 Elo = 1500,
                 ActivityId = activity.Id
             };
@@ -87,7 +88,7 @@ namespace competra.wwwapi.Data
             UserActivity userActivity2 = new UserActivity
             {
                 Id = 2,
-                UserId = user2.Id.ToString(),
+                UserId = user2.Id,
                 Elo = 1500,
                 ActivityId = activity.Id
             };
@@ -107,18 +108,17 @@ namespace competra.wwwapi.Data
                 EloChangeP2 = -10,
                 P1Result = 1,  // User 1 won
                 P2Result = 0,  // User 2 lost
-                Activity = activity
             };
 
             _matches.Add(match);
         }
 
-        public List<User> UserList => _users;
-        public List<Group> GroupList => _groups;
-        public List<Activity> ActivityList => _activities;
-        public List<UserActivity> UserActivityList => _userActivities;
-        public List<UserGroup> UserGroupList => _userGroups;
-        public List<Match> MatchList => _matches;
+        public List<User> Users { get { return _users; } }
+        public List<Group> GroupList { get { return _groups; } }
+        public List<Activity> ActivityList { get { return _activities; } }
+        public List<UserActivity> UserActivityList { get { return _userActivities; } }
+        public List<UserGroup> UserGroupList { get { return _userGroups; } }
+        public List<Match> MatchList {  get { return _matches; } }
 
     }
 }
