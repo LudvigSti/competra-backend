@@ -162,13 +162,13 @@ namespace competra.wwwapi.Migrations
                         new
                         {
                             Id = 1,
-                            Password = "password123",
+                            Password = "$2b$10$jne5qzW/fuDlZrmoNd9HA.eX61UUaVP4A2voVWLDwauZ5FiW437Qm",
                             Username = "John"
                         },
                         new
                         {
                             Id = 2,
-                            Password = "password123",
+                            Password = "$2b$10$jne5qzW/fuDlZrmoNd9HA.eX61UUaVP4A2voVWLDwauZ5FiW437Qm",
                             Username = "Ibz"
                         });
                 });

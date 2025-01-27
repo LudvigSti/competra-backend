@@ -30,6 +30,19 @@ namespace competra.wwwapi.Repositories.Repos
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        public async Task<Models.User> Update(Models.User user)
+        {
+            var oldUser = await _db.Users.FindAsync(user.Id);
+            oldUser.Username = user.Username;
+            await _db.SaveChangesAsync();
+            return user;
+            
+        }
+        public async Task<Models.User> GetByUsername(string username)
+        {
+            return await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+        }
+
 
     }
 }
