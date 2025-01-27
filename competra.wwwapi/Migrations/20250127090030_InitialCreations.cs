@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace competra.wwwapi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,10 +35,7 @@ namespace competra.wwwapi.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -150,11 +147,11 @@ namespace competra.wwwapi.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "DateOfBirth", "Email", "FirstName", "LastName", "Password" },
+                columns: new[] { "Id", "Password", "Username" },
                 values: new object[,]
                 {
-                    { 1, new DateOnly(2000, 5, 15), "john.CEna@example.com", "John", "Cena", "password123" },
-                    { 2, new DateOnly(1998, 8, 20), "ibzinho@example.com", "Ibz", "DaGOat", "password123" }
+                    { 1, "password123", "John" },
+                    { 2, "password123", "Ibz" }
                 });
 
             migrationBuilder.InsertData(

@@ -19,20 +19,14 @@ namespace competra.wwwapi.Data
             User user1 = new User
             {
                 Id = 1,
-                FirstName = "John",
-                LastName = "Cena",
-                DateOfBirth = new DateOnly(2000, 5, 15),
-                Email = "john.CEna@example.com",
+                Username = "John",
                 Password = "password123"
             };
 
             User user2 = new User
             {
                 Id = 2,
-                FirstName = "Ibz",
-                LastName = "DaGOat",
-                DateOfBirth = new DateOnly(1998, 8, 20),
-                Email = "ibzinho@example.com",
+                Username = "Ibz",
                 Password = "password123"
             };
 
