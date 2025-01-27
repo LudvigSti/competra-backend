@@ -5,5 +5,6 @@ namespace competra.wwwapi.Repositories.Interfaces
     public interface IUser
     {
         Task<ICollection<User>> GetAll();
+        Task<ICollection<User>> PostUser();
     }
 }

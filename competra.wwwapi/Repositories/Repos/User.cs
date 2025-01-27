@@ -17,6 +17,10 @@ namespace competra.wwwapi.Repositories.Repos
         {
             return await _db.Users.ToListAsync();
         }
+        public async Task<ICollection<Models.User>> PostUser()
+        {
+            return await _db.Users.ToListAsync();
+        }
 
         
     }

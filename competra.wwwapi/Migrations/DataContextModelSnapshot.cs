@@ -146,22 +146,11 @@ namespace competra.wwwapi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly>("DateOfBirth")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -173,20 +162,14 @@ namespace competra.wwwapi.Migrations
                         new
                         {
                             Id = 1,
-                            DateOfBirth = new DateOnly(2000, 5, 15),
-                            Email = "john.CEna@example.com",
-                            FirstName = "John",
-                            LastName = "Cena",
-                            Password = "password123"
+                            Password = "password123",
+                            Username = "John"
                         },
                         new
                         {
                             Id = 2,
-                            DateOfBirth = new DateOnly(1998, 8, 20),
-                            Email = "ibzinho@example.com",
-                            FirstName = "Ibz",
-                            LastName = "DaGOat",
-                            Password = "password123"
+                            Password = "password123",
+                            Username = "Ibz"
                         });
                 });
 
