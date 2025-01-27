@@ -18,6 +18,7 @@ namespace competra.wwwapi.Data
         {
             optionsBuilder.UseNpgsql(_connectionString);
             optionsBuilder.LogTo(message => Debug.WriteLine(message)); //see the sql EF using in the console
+
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -12,8 +12,8 @@ using competra.wwwapi.Data;
 namespace competra.wwwapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250127105428_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250127214850_Hash")]
+    partial class Hash
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,13 +165,13 @@ namespace competra.wwwapi.Migrations
                         new
                         {
                             Id = 1,
-                            Password = "password123",
+                            Password = "$2b$10$jne5qzW/fuDlZrmoNd9HA.eX61UUaVP4A2voVWLDwauZ5FiW437Qm",
                             Username = "John"
                         },
                         new
                         {
                             Id = 2,
-                            Password = "password123",
+                            Password = "$2b$10$jne5qzW/fuDlZrmoNd9HA.eX61UUaVP4A2voVWLDwauZ5FiW437Qm",
                             Username = "Ibz"
                         });
                 });

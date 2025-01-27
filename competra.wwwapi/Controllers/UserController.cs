@@ -2,6 +2,7 @@
 using competra.wwwapi.DTO;
 using competra.wwwapi.Models;
 using competra.wwwapi.Repositories.Interfaces;
+using competra.wwwapi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace competra.wwwapi.Controllers
@@ -13,6 +14,7 @@ namespace competra.wwwapi.Controllers
             var group = app.MapGroup("user");
             group.MapGet("/", GetAll);
             group.MapPost("/", CreateUser);
+            group.MapPost("/login", Login);
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -61,6 +63,37 @@ namespace competra.wwwapi.Controllers
                 throw;
             }
             
+        }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+
+        private static async Task<IResult> Login(IUser repo, LoginDTO dto, AuthService authService)
+        {
+            // Check for missing username or password
+            if (string.IsNullOrEmpty(dto.Username) || string.IsNullOrEmpty(dto.Password))
+            {
+                return TypedResults.BadRequest("Username and password cannot be empty.");
+            }
+
+            var user = await repo.GetByUsername(dto.Username);
+            if (user == null)
+            {
+                return TypedResults.Unauthorized();
+            }
+
+
+            // Verify password
+            var passwordVerified = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
+            if (!passwordVerified)
+            {
+                return TypedResults.Unauthorized();
+            }
+
+            // Generate JWT token
+            var token = authService.GenerateToken(user);
+
+            // Return the token
+            return TypedResults.Ok(new { Token = token });
         }
 
     }

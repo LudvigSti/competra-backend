@@ -20,14 +20,14 @@ namespace competra.wwwapi.Data
             {
                 Id = 1,
                 Username = "John",
-                Password = "password123"
+                Password = "$2b$10$jne5qzW/fuDlZrmoNd9HA.eX61UUaVP4A2voVWLDwauZ5FiW437Qm"
             };
 
             User user2 = new User
             {
                 Id = 2,
                 Username = "Ibz",
-                Password = "password123"
+                Password = "$2b$10$jne5qzW/fuDlZrmoNd9HA.eX61UUaVP4A2voVWLDwauZ5FiW437Qm"
             };
 
             _users.Add(user1);
@@ -106,13 +106,13 @@ namespace competra.wwwapi.Data
 
             _matches.Add(match);
         }
-
+        
         public List<User> Users { get { return _users; } }
         public List<Group> GroupList { get { return _groups; } }
         public List<Activity> ActivityList { get { return _activities; } }
         public List<UserActivity> UserActivityList { get { return _userActivities; } }
         public List<UserGroup> UserGroupList { get { return _userGroups; } }
         public List<Match> MatchList {  get { return _matches; } }
-
+        
     }
 }
