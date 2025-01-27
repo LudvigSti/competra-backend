@@ -12,8 +12,8 @@ using competra.wwwapi.Data;
 namespace competra.wwwapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250127090030_InitialCreations")]
-    partial class InitialCreations
+    [Migration("20250127105428_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
