@@ -54,6 +54,8 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
+
+
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -94,6 +96,13 @@ if(app.Environment.IsProduction())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+    
 app.configureUserController();
 app.UseHttpsRedirection();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
