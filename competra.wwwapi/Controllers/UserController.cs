@@ -1,5 +1,8 @@
 ﻿
+using competra.wwwapi.DTO;
+using competra.wwwapi.Models;
 using competra.wwwapi.Repositories.Interfaces;
+using competra.wwwapi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace competra.wwwapi.Controllers
@@ -10,7 +13,34 @@ namespace competra.wwwapi.Controllers
         {
             var group = app.MapGroup("user");
             group.MapGet("/", GetAll);
-            //group.MapPost("", PostUser);
+            group.MapPost("/", CreateUser);
+            group.MapPost("/login", Login);
+        }
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        private static async Task<IResult> CreateUser(IUser repo, CreateUserDTO dto) 
+        {
+            if (string.IsNullOrEmpty(dto.Username) || string.IsNullOrEmpty(dto.Password))
+            {
+                return TypedResults.BadRequest("Username and password cannot be empty.");
+            }
+            if (dto.Password.Length < 5 || dto.Username.Length < 3) 
+            {
+                return TypedResults.BadRequest("Username has to be more than 3 letters and password more than 5");
+            }
+
+            
+            var user = new User
+            {
+                Username = dto.Username, 
+                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password)
+            
+        };
+
+            var createdUser = await repo.Create(user);
+
+            return TypedResults.Ok(createdUser);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -34,55 +64,37 @@ namespace competra.wwwapi.Controllers
             }
             
         }
- /*       [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> PostUser(IUser repo)
-        {
-            try
-            {
-                
-                var users = await repo.PostUser();
-                if(users == null)
-                {
-                    return TypedResults.NotFound();
-                }
-                return TypedResults.Ok(users);
-            }
-            catch (Exception)
-            {
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-                throw;
+        private static async Task<IResult> Login(IUser repo, LoginDTO dto, AuthService authService)
+        {
+            // Check for missing username or password
+            if (string.IsNullOrEmpty(dto.Username) || string.IsNullOrEmpty(dto.Password))
+            {
+                return TypedResults.BadRequest("Username and password cannot be empty.");
             }
-            
+
+            var user = await repo.GetByUsername(dto.Username);
+            if (user == null)
+            {
+                return TypedResults.Unauthorized();
+            }
+
+
+            // Verify password
+            var passwordVerified = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
+            if (!passwordVerified)
+            {
+                return TypedResults.Unauthorized();
+            }
+
+            // Generate JWT token
+            var token = authService.GenerateToken(user);
+
+            // Return the token
+            return TypedResults.Ok(new { Token = token });
         }
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> PostUser([FromBody] CreateUserDTO userDto, IUser repo)
-        {
-            try
-            {
-                if (userDto == null || string.IsNullOrWhiteSpace(userDto.Did))
-                {
-                    return TypedResults.BadRequest("Invalid user data.");
-                }
-
-                // Call the repository to create a user
-                var createdUser = await repo.PostUser(userDto);
-                if (createdUser == null)
-                {
-                    return TypedResults.NotFound("User creation failed.");
-                }
-
-                // Return the created user along with its location
-                return TypedResults.Created($"/user/{createdUser.Id}", createdUser);
-            }
-            catch (Exception ex)
-            {
-                // Log exception and return internal server error
-                return TypedResults.Problem(ex.Message);
-            }
-        }*/
 
     }
     

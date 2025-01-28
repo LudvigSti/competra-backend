@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace competra.wwwapi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreations : Migration
+    public partial class Hash : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -150,8 +150,8 @@ namespace competra.wwwapi.Migrations
                 columns: new[] { "Id", "Password", "Username" },
                 values: new object[,]
                 {
-                    { 1, "password123", "John" },
-                    { 2, "password123", "Ibz" }
+                    { 1, "$2b$10$jne5qzW/fuDlZrmoNd9HA.eX61UUaVP4A2voVWLDwauZ5FiW437Qm", "John" },
+                    { 2, "$2b$10$jne5qzW/fuDlZrmoNd9HA.eX61UUaVP4A2voVWLDwauZ5FiW437Qm", "Ibz" }
                 });
 
             migrationBuilder.InsertData(
