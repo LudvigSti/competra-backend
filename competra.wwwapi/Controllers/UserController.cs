@@ -13,13 +13,37 @@ namespace competra.wwwapi.Controllers
         {
             var group = app.MapGroup("user");
             group.MapGet("/", GetAll);
-            group.MapPost("/", CreateUser);
+            group.MapPost("/register", Register);
             group.MapPost("/login", Login);
+            group.MapPut("/", Update);
+        }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        private static async Task<IResult> Update(IUser repo, string currentUsername, string newUsername)
+        {
+            if (string.IsNullOrEmpty(newUsername) || newUsername.Length < 3)
+            {
+                return TypedResults.BadRequest("The new username must be at least 3 characters long.");
+            }
+            var user = await repo.GetByUsername(currentUsername);
+
+            if (user == null)
+            {
+                return TypedResults.NotFound($"{user} not found.");
+            }
+            var takenUser = await repo.GetByUsername(newUsername);
+            if (takenUser != null) {
+                return TypedResults.BadRequest($"The username '{newUsername}' is already taken.");
+            }
+            user.Username = newUsername;
+
+            await repo.Update(user);
+            return TypedResults.Ok($"Username successfully updated to '{newUsername}'.");
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> CreateUser(IUser repo, CreateUserDTO dto) 
+        private static async Task<IResult> Register(IUser repo, CreateUserDTO dto, AuthService authService) 
         {
             if (string.IsNullOrEmpty(dto.Username) || string.IsNullOrEmpty(dto.Password))
             {
@@ -39,8 +63,10 @@ namespace competra.wwwapi.Controllers
         };
 
             var createdUser = await repo.Create(user);
+            var token = authService.GenerateToken(createdUser);
 
-            return TypedResults.Ok(createdUser);
+
+            return TypedResults.Ok(token);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
