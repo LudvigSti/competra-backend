@@ -88,6 +88,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+if(!app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 app.configureUserController();
 app.UseHttpsRedirection();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
