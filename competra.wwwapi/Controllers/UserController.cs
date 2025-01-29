@@ -66,7 +66,10 @@ namespace competra.wwwapi.Controllers
             var token = authService.GenerateToken(createdUser);
 
 
-            return TypedResults.Ok(new { token });
+
+
+            return TypedResults.Ok(new { Token = token });
+
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]

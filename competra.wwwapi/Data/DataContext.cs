@@ -7,18 +7,20 @@ namespace competra.wwwapi.Data
 {
     public class DataContext : DbContext
     {
-        private string _connectionString;
+        private readonly IConfiguration _configuration;
 
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        public DataContext(DbContextOptions<DataContext> options, IConfiguration configuration) : base(options)
         {
+
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json").Build();
             _connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnectionString")!;
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_connectionString);
-            optionsBuilder.LogTo(message => Debug.WriteLine(message)); //see the sql EF using in the console
-
+            var connectionString = _configuration.GetConnectionString("DefaultConnectionString");
+            optionsBuilder.UseNpgsql(connectionString);
+            optionsBuilder.LogTo(message => Debug.WriteLine(message)); // Log SQL queries
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
