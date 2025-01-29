@@ -484,3 +484,4 @@ $RECYCLE.BIN/
 *.swp
 /competra.wwwapi/appsettings.development.json
 /competra.wwwapi/appsettings.production.json
+/competra.wwwapi/appsettings.Development.json
