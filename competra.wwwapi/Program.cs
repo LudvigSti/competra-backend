@@ -106,7 +106,6 @@ builder.Configuration
     
 app.configureUserController();
 app.configureUserGroupController();
-app.UseHttpsRedirection();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
 
 app.Run();
