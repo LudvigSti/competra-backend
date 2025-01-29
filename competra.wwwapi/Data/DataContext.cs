@@ -11,7 +11,10 @@ namespace competra.wwwapi.Data
 
         public DataContext(DbContextOptions<DataContext> options, IConfiguration configuration) : base(options)
         {
-            _configuration = configuration;
+
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json").Build();
+            _connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnectionString")!;
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

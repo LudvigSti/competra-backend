@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>();
 //Add new interfaces with their repositories under
 builder.Services.AddScoped<IUser, User>();
+builder.Services.AddScoped<IUserGroup, UserGroup>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -104,6 +105,7 @@ builder.Configuration
     .AddEnvironmentVariables();
     
 app.configureUserController();
+app.configureUserGroupController();
 app.UseHttpsRedirection();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
 
