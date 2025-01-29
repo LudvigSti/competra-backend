@@ -11,15 +11,13 @@ namespace competra.wwwapi.Data
 
         public DataContext(DbContextOptions<DataContext> options, IConfiguration configuration) : base(options)
         {
-
-            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json").Build();
-            _connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnectionString")!;
-
+            _configuration = configuration;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = _configuration.GetConnectionString("DefaultConnectionString");
             optionsBuilder.UseNpgsql(connectionString);
+
             optionsBuilder.LogTo(message => Debug.WriteLine(message)); // Log SQL queries
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,12 +29,6 @@ namespace competra.wwwapi.Data
             modelBuilder.Entity<UserGroup>().HasData(seeder.UserGroupList);
             modelBuilder.Entity<UserActivity>().HasData(seeder.UserActivityList);
             modelBuilder.Entity<Group>().HasData(seeder.GroupList);
-
-
-
-
-
-
 
             modelBuilder.Entity<UserGroup>()
             .HasKey(ug => new { ug.UserId, ug.GroupId });
