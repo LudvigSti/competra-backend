@@ -18,8 +18,20 @@ namespace competra.wwwapi.Controllers
             group.MapGet("/{userId}", GetByUserId);
             group.MapPost("/", Create);
             group.MapPost("/{groupId}/addUser/{userId}", AddUserToGroup);
+            group.MapDelete("/", RemoveUser);
 
-
+        }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> RemoveUser(IUserGroup repo, int userId, int groupId)
+        {
+            var userGroups = repo.GetAll().Result;
+            if (userGroups.FirstOrDefault(ug => ug.UserId == userId && ug.GroupId == groupId) == null) { 
+                return TypedResults.NotFound("User is not in that group");
+            }
+           
+            await repo.LeaveGroup(userId, groupId);
+            return TypedResults.Ok("Successfully removed from group");
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
