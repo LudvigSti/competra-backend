@@ -1,27 +1,54 @@
-﻿using competra.wwwapi.Repositories.Interfaces;
+﻿using competra.wwwapi.Data;
+using competra.wwwapi.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using competra.wwwapi.Models;
 
 namespace competra.wwwapi.Repositories.Repos
 {
     public class UserGroup : IUserGroup
     {
-        public Task<Models.UserGroup> AddUserToGroup(int groupId, int userId)
+        private DataContext _db;
+        public UserGroup(DataContext db)
         {
-            throw new NotImplementedException();
+            _db = db;
+        }
+        public async Task AddUserToGroup(int groupId, int userId)
+        {
+            var group = await _db.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
+            var user = await _db.Users.FindAsync(userId);
+
+            if (group != null && user != null)
+            {
+                var userGroup = new Models.UserGroup
+                {
+                    UserId = user.Id,
+                    GroupId = group.Id
+                };
+                _db.UserGroups.Add(userGroup);
+                await _db.SaveChangesAsync();
+            }
+            
         }
 
-        public Task<Models.UserGroup> Create(Models.UserGroup group)
+        public async Task<Models.UserGroup> Create(Models.UserGroup group)
         {
-            throw new NotImplementedException();
+            _db.UserGroups.Add(group);
+            await _db.SaveChangesAsync();
+            return group;
         }
 
-        public Task<Models.UserGroup> GetAll()
+        public async Task<ICollection<Models.UserGroup>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _db.UserGroups
+                    .Include(ug => ug.Group)
+                    .Distinct()  // Ensure unique groups
+                    .ToListAsync();
         }
 
-        public Task<Models.UserGroup> GetById(int id)
+        public async Task<ICollection<Models.UserGroup>> GetById(int userId)
         {
-            throw new NotImplementedException();
+            var userGroups = await _db.UserGroups.Include(ug => ug.Group).Where(u => u.UserId == userId).ToListAsync();
+            return  userGroups;
         }
     }
 }
