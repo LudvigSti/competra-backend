@@ -96,6 +96,8 @@ if(app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
+
 }
 
 builder.Configuration
