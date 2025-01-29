@@ -50,5 +50,13 @@ namespace competra.wwwapi.Repositories.Repos
             var userGroups = await _db.UserGroups.Include(ug => ug.Group).Where(u => u.UserId == userId).ToListAsync();
             return  userGroups;
         }
+
+        public async Task LeaveGroup(int userId, int groupId)
+        {
+            var userGroup = await _db.UserGroups
+                .FirstOrDefaultAsync(ug => ug.GroupId == groupId && ug.UserId == userId);
+            _db.UserGroups.Remove(userGroup);
+            await _db.SaveChangesAsync();
+        }
     }
 }
