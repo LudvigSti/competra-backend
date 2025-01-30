@@ -12,8 +12,8 @@ using competra.wwwapi.Data;
 namespace competra.wwwapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250130090632_localhost")]
-    partial class localhost
+    [Migration("20250130121910_FInal")]
+    partial class FInal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
