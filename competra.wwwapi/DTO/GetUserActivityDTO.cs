@@ -7,5 +7,6 @@ namespace competra.wwwapi.DTO
         public int Elo { get; set; }
         public int ActivityId { get; set; }
         public string ActivityName { get; set; }
+        public string Username { get; set; }
     }
 }

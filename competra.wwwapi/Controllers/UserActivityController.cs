@@ -35,7 +35,8 @@ namespace competra.wwwapi.Controllers
                     UserId = ua.UserId,
                     Elo = ua.Elo,
                     ActivityId = ua.ActivityId,
-                    ActivityName = ua.Activity.ActivityName
+                    ActivityName = ua.Activity.ActivityName,
+                    Username = ua.User.Username
                 }).ToList();
                 return TypedResults.Ok(getuserActivitiesDTO);
             }
