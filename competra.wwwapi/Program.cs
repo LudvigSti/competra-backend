@@ -114,7 +114,6 @@ app.configureUserController();
 app.configureActivityController();
 app.configureMatchController();
 app.configureUserActivityController();
-app.UseHttpsRedirection();
 app.configureUserGroupController();
 app.configureGroupController();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
