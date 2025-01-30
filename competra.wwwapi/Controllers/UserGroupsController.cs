@@ -18,7 +18,7 @@ namespace competra.wwwapi.Controllers
             group.MapGet("/{userId}", GetByUserId);
             group.MapPost("/", Create);
             group.MapPost("/{groupId}/addUser/{userId}", AddUserToGroup);
-            group.MapDelete("/", RemoveUser);
+            group.MapDelete("/{userId}/{groupId}", RemoveUser);
 
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -94,6 +94,7 @@ namespace competra.wwwapi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> AddUserToGroup(IUserGroup repo, int groupId, int userId)
         {
+            
             await repo.AddUserToGroup(groupId, userId);
             return TypedResults.Ok("User successfully added to group.");
         }
