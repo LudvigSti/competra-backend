@@ -15,7 +15,10 @@ namespace competra.wwwapi.Repositories.Repos
 
         public async Task<ICollection<Models.UserActivity>> GetAll()
         {
-            return await _db.UserActivities.ToListAsync();
+            return await _db.UserActivities
+            .Include(ua=>ua.Activity)
+            .Include(ua=>ua.User)
+            .ToListAsync();
         }
         public async Task<Models.UserActivity> Create(Models.UserActivity userActivity)
         {

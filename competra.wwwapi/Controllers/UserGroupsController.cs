@@ -53,14 +53,10 @@ namespace competra.wwwapi.Controllers
         private static async Task<IResult> GetByUserId(IUserGroup repo, int userId)
         {
             var userGroups = await repo.GetById(userId);
-            if(userGroups == null)
-            {
-                return TypedResults.NotFound("You have no groups");
-            }
 
             if (userGroups == null || !userGroups.Any())
             {
-                return TypedResults.NotFound($"{userId} not found.");
+                return TypedResults.NotFound($"User with UserId: {userId} have no groups.");
             }
             var usergroupsDTO = userGroups.Select(ug => new GetUserGroupsDTO
             {

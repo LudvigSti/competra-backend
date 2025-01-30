@@ -15,7 +15,9 @@ namespace competra.wwwapi.Repositories.Repos
 
         public async Task<ICollection<Models.Activity>> GetAll()
         {
-            return await _db.Activities.ToListAsync();
+            return await _db.Activities
+    
+                .ToListAsync();
         }
         public async Task<Models.Activity> Create(Models.Activity activity)
         {
@@ -28,6 +30,19 @@ namespace competra.wwwapi.Repositories.Repos
         public async Task<Models.Activity> GetById(int activityId)
         {
             return await _db.Activities.FirstOrDefaultAsync(a => a.Id == activityId);
+        }
+
+        
+
+        public async Task<ICollection<Models.Activity>> GetAllByGroupId(int groupId)
+        {
+            return await _db.Activities.Include(g => g.Group).Where(a => a.GroupId == groupId).ToListAsync();
+        }
+
+        public async Task<Models.Activity> Leaderboard(int activityId)
+        {
+            return await _db.Activities.Include(ua => ua.UserActivities).ThenInclude(u => u.User).FirstAsync(activity => activity.Id == activityId);
+            
         }
     }
 }
