@@ -24,6 +24,7 @@ builder.Services.AddScoped<IActivity, Activity>();
 builder.Services.AddScoped<IUserActivity, UserActivity>();
 builder.Services.AddScoped<IUserGroup, UserGroup>();
 builder.Services.AddScoped<IGroup, Group>();
+builder.Services.AddScoped<EloCalculator>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
