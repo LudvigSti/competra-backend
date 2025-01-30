@@ -90,21 +90,6 @@ namespace competra.wwwapi.Data
             _userActivities.Add(userActivity1);
             _userActivities.Add(userActivity2);
 
-            // Create a Match between the two users in the activity
-            Match match = new Match
-            {
-                Id = 1,
-                P1Id = user1.Id,
-                P2Id = user2.Id,
-                CreatedAt = new DateOnly(2023, 7, 15),
-                ActivityId = activity.Id,
-                EloChangeP1 = 10,
-                EloChangeP2 = -10,
-                P1Result = 1,  // User 1 won
-                P2Result = 0,  // User 2 lost
-            };
-
-            _matches.Add(match);
         }
         
         public List<User> Users { get { return _users; } }

@@ -19,7 +19,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>();
 //Add new interfaces with their repositories under
 builder.Services.AddScoped<IUser, User>();
+builder.Services.AddScoped<IMatch, Match>();
+builder.Services.AddScoped<IActivity, Activity>();
+builder.Services.AddScoped<IUserActivity, UserActivity>();
 builder.Services.AddScoped<IUserGroup, UserGroup>();
+builder.Services.AddScoped<IGroup, Group>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -105,9 +109,13 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
-    
+
 app.configureUserController();
+app.configureActivityController();
+app.configureMatchController();
+app.configureUserActivityController();
 app.configureUserGroupController();
+app.configureGroupController();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
 
 app.Run();
