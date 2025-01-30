@@ -23,6 +23,7 @@ builder.Services.AddScoped<IMatch, Match>();
 builder.Services.AddScoped<IActivity, Activity>();
 builder.Services.AddScoped<IUserActivity, UserActivity>();
 builder.Services.AddScoped<IUserGroup, UserGroup>();
+builder.Services.AddScoped<IGroup, Group>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -115,6 +116,7 @@ app.configureMatchController();
 app.configureUserActivityController();
 app.UseHttpsRedirection();
 app.configureUserGroupController();
+app.configureGroupController();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
 
 app.Run();
