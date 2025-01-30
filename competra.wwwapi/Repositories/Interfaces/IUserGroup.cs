@@ -8,6 +8,7 @@ namespace competra.wwwapi.Repositories.Interfaces
         Task<ICollection<UserGroup>> GetById(int id);
         Task<UserGroup> Create(UserGroup group);
         Task AddUserToGroup(int groupId, int userId);
+        Task LeaveGroup(int userId, int groupId);
 
     }
 }

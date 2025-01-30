@@ -96,6 +96,8 @@ if(app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
+
 }
 
 builder.Configuration
@@ -106,7 +108,6 @@ builder.Configuration
     
 app.configureUserController();
 app.configureUserGroupController();
-app.UseHttpsRedirection();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
 
 app.Run();
