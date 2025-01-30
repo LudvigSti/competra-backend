@@ -38,5 +38,11 @@ namespace competra.wwwapi.Repositories.Repos
         {
             return await _db.Activities.Include(g => g.Group).Where(a => a.GroupId == groupId).ToListAsync();
         }
+
+        public async Task<Models.Activity> Leaderboard(int activityId)
+        {
+            return await _db.Activities.Include(ua => ua.UserActivities).ThenInclude(u => u.User).FirstAsync(activity => activity.Id == activityId);
+            
+        }
     }
 }

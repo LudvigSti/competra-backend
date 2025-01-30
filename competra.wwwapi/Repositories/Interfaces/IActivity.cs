@@ -8,5 +8,6 @@ namespace competra.wwwapi.Repositories.Interfaces
         Task<Activity> Create(Activity activity);
         Task<Activity> GetById(int id);
         Task <ICollection<Activity>> GetAllByGroupId(int groupId);
+        Task<Activity>Leaderboard(int activityId);
     }
 }

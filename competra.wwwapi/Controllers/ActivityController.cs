@@ -15,6 +15,7 @@ namespace competra.wwwapi.Controllers
             group.MapPost("/", Create);
             group.MapGet("/", GetAll);
             group.MapGet("/{groupId}", GetAllByGId);
+            group.MapGet("/leaderboard/{activityId}", GetLeaderboard);
 
         }
 
@@ -81,6 +82,33 @@ namespace competra.wwwapi.Controllers
             });
 
             return TypedResults.Ok(groupActivitiesDTO);
+        }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> GetLeaderboard(IActivity repo, int activityId)
+        {
+            try
+            {
+                var activity = await repo.Leaderboard(activityId);
+                if (activity == null)
+                {
+                    return TypedResults.NotFound("Activity does not exist");
+                }
+                var leaderboards = activity.UserActivities.Select(ldb => new LeaderboardDTO
+                {
+                    UserName = ldb.User.Username,
+                    Elo = ldb.Elo,
+
+                }).OrderByDescending(user => user.Elo);
+                return TypedResults.Ok(leaderboards);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        
         }
 
     }
