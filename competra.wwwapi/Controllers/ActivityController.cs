@@ -12,8 +12,10 @@ namespace competra.wwwapi.Controllers
         public static void configureActivityController(this WebApplication app)
         {
             var group = app.MapGroup("activity");
-            group.MapPost("/create", Create);
+            group.MapPost("/", Create);
             group.MapGet("/", GetAll);
+            group.MapGet("/{groupId}", GetAllByGId);
+
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -57,6 +59,28 @@ namespace competra.wwwapi.Controllers
             var createdActivity = await repo.Create(activity);
 
             return TypedResults.Ok(createdActivity);
+        }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> GetAllByGId(IActivity repo, int groupId)
+        {
+            var groupActivities = await repo.GetAllByGroupId(groupId);
+
+            if (groupActivities == null || !groupActivities.Any())
+            {
+                return TypedResults.NotFound("No activities found for this group.");
+            }
+
+            var groupActivitiesDTO = groupActivities.Select(a => new GroupActivityDTO
+            {
+                
+                GroupId = a.Group.Id, 
+                GroupName = a.Group.GroupName,
+                ActivityId = a.Id,
+                ActivityName = a.ActivityName
+            });
+
+            return TypedResults.Ok(groupActivitiesDTO);
         }
 
     }

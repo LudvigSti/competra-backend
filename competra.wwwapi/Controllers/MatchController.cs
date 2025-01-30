@@ -39,6 +39,11 @@ namespace competra.wwwapi.Controllers
 
             var p1Activity = await context.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == dto.P1Id && ua.ActivityId == dto.ActivityId);
             var p2Activity = await context.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == dto.P2Id && ua.ActivityId == dto.ActivityId);
+            if (p1Activity.Activity == null || p2Activity.User == null)
+            {
+                TypedResults.NotFound("One of the users are not in the activity");
+            }
+
             var p1OldElo = p1Activity.Elo;
             var p2OldElo = p2Activity.Elo;
 

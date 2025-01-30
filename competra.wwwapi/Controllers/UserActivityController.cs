@@ -12,8 +12,8 @@ namespace competra.wwwapi.Controllers
         public static void configureUserActivityController(this WebApplication app)
         {
             var group = app.MapGroup("UserActivity");
-            group.MapPost("/create", Create);
-            group.MapPut("/update", Update);
+            group.MapPost("/", Create);
+            group.MapPut("/", Update);
             group.MapGet("/", GetAll);
         }
 
@@ -75,11 +75,12 @@ namespace competra.wwwapi.Controllers
                 return TypedResults.BadRequest("UserActivity not found.");
             }
 
-            userActivity.Elo = dto.Elo;
+            userActivity.Elo = 1000;
 
             await repo.Update(userActivity);
             return TypedResults.Ok("Elo successfully updated.");
         }
+        
 
     }
     
