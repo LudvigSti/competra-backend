@@ -29,7 +29,15 @@ namespace competra.wwwapi.Controllers
                 {
                     return TypedResults.NotFound();
                 }
-                return TypedResults.Ok(userActivities);
+                var getuserActivitiesDTO = userActivities.Select(ua => new GetUserActivityDTO
+                {
+                    Id = ua.Id,
+                    UserId = ua.UserId,
+                    Elo = ua.Elo,
+                    ActivityId = ua.ActivityId,
+                    ActivityName = ua.Activity.ActivityName
+                }).ToList();
+                return TypedResults.Ok(getuserActivitiesDTO);
             }
             catch (Exception)
             {

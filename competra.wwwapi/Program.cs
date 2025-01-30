@@ -85,6 +85,7 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
+Console.WriteLine($"Current Environment: {app.Environment.EnvironmentName}");
 app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
