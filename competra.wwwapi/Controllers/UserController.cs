@@ -13,6 +13,7 @@ namespace competra.wwwapi.Controllers
         {
             var group = app.MapGroup("user");
             group.MapGet("/", GetAll);
+            group.MapPost("/{id}", GetUserById);
             group.MapPost("/register", Register);
             group.MapPost("/login", Login);
             group.MapPut("/", Update);
@@ -90,6 +91,26 @@ namespace competra.wwwapi.Controllers
             }
             
         }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> GetUserById(IUser repo, int userId)
+        {
+        try
+        {
+            var user = await repo.GetById(userId);
+            if (user == null)
+            {
+                return TypedResults.NotFound();
+            }
+            return TypedResults.Ok(user);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception (ex) here if needed
+            return TypedResults.Problem("An error occurred while retrieving the user.");
+        }
+}
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 

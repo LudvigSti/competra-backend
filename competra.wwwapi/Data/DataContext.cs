@@ -29,12 +29,6 @@ namespace competra.wwwapi.Data
             modelBuilder.Entity<UserActivity>().HasData(seeder.UserActivityList);
             modelBuilder.Entity<Group>().HasData(seeder.GroupList);
 
-
-
-
-
-
-
             modelBuilder.Entity<UserGroup>()
             .HasKey(ug => new { ug.UserId, ug.GroupId });
 
