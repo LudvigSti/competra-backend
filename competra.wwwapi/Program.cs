@@ -22,6 +22,7 @@ builder.Services.AddScoped<IUser, User>();
 builder.Services.AddScoped<IMatch, Match>();
 builder.Services.AddScoped<IActivity, Activity>();
 builder.Services.AddScoped<IUserActivity, UserActivity>();
+builder.Services.AddScoped<IUserGroup, UserGroup>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -99,6 +100,8 @@ if(app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
+
 }
 
 builder.Configuration
@@ -112,6 +115,7 @@ app.configureActivityController();
 app.configureMatchController();
 app.configureUserActivityController();
 app.UseHttpsRedirection();
+app.configureUserGroupController();
 // Remember to add app.configure{Static void class Endpoint class}(); for each endpoint that is made
 
 app.Run();
