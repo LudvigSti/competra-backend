@@ -58,5 +58,6 @@ namespace competra.wwwapi.Repositories.Repos
             _db.UserGroups.Remove(userGroup);
             await _db.SaveChangesAsync();
         }
+        
     }
 }
