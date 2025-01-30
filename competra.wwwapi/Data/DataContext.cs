@@ -17,6 +17,7 @@ namespace competra.wwwapi.Data
         {
             var connectionString = _configuration.GetConnectionString("DefaultConnectionString");
             optionsBuilder.UseNpgsql(connectionString);
+
             optionsBuilder.LogTo(message => Debug.WriteLine(message)); // Log SQL queries
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

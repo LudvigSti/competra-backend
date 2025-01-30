@@ -29,7 +29,5 @@ namespace competra.wwwapi.Repositories.Repos
         {
             return await _db.Activities.FirstOrDefaultAsync(a => a.Id == activityId);
         }
-
-
     }
 }
