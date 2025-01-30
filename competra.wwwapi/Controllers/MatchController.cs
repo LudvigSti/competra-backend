@@ -14,35 +14,37 @@ namespace competra.wwwapi.Controllers
         {
             var group = app.MapGroup("match");
             group.MapPost("/", Create);
-            group.MapGet("/{activityId}/{userId}",GetMatchesByUId);
+            group.MapGet("/{activityId}/{userId}", GetMatchHistoryByUserId);
         }
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetMatchesByUId(IMatch repo, int activityId, int userId)
-        { 
-            var matches = await repo.GetUserMatches(activityId,userId);
+        private static async Task<IResult> GetMatchHistoryByUserId(IMatch repo, int activityId, int userId, DataContext context)
+        {
+            var matches = await repo.GetUserMatches(activityId, userId);
 
-
-            if (matches == null )
+            if (matches == null || !matches.Any())
             {
-                return TypedResults.NotFound("User has no matches");
+                return TypedResults.NotFound("User has no matches in this activity.");
             }
+
+            var userIds = matches.SelectMany(m => new[] { m.P1Id, m.P2Id }).Distinct();
+            var users = await context.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.Username); // Assuming 'Name' exists in User model
+
             var matchHistory = matches.Select(m => new UserMatchesDTO
             {
                 UserId = userId,
                 CreatedAt = m.CreatedAt,
                 EloChange = (m.P1Id == userId) ? m.EloChangeP1 : m.EloChangeP2,
-                P1Id = m.P1Id,
-                P2Id = m.P2Id,
-                P1Result = m.P1Result,
-                P2Result = m.P2Result,
-
-
-            });
+                Result = (m.P1Id == userId)
+                    ? (m.P1Result > m.P2Result ? "Won" : "Lost")
+                    : (m.P2Result > m.P1Result ? "Won" : "Lost"),
+                OpponentId = (m.P1Id == userId) ? m.P2Id : m.P1Id,
+                OpponentName = users.TryGetValue((m.P1Id == userId) ? m.P2Id : m.P1Id, out var name) ? name : " "
+            }).ToList();
 
             return TypedResults.Ok(matchHistory);
-
         }
+
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
