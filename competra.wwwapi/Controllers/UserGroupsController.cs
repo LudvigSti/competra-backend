@@ -60,7 +60,7 @@ namespace competra.wwwapi.Controllers
 
             if (userGroups == null || !userGroups.Any())
             {
-                return TypedResults.NotFound($"{userId} not found.");
+                return TypedResults.NotFound($"User with UserId: {userId} .");
             }
             var usergroupsDTO = userGroups.Select(ug => new GetUserGroupsDTO
             {
