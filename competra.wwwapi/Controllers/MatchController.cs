@@ -5,40 +5,63 @@ using competra.wwwapi.Repositories.Interfaces;
 using competra.wwwapi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using System;
 namespace competra.wwwapi.Controllers
 {
-    public static class MatchControllerExtensions
+    public static class MatchController
     {
         public static void configureMatchController(this WebApplication app)
         {
             var group = app.MapGroup("match");
-            group.MapPost("/create", MatchController.Create);
+            group.MapPost("/", Create);
+            group.MapGet("/{activityId}/{userId}", GetMatchHistoryByUserId);
         }
-    }
-    
-
-    public class MatchController : ControllerBase
-    {
-        private readonly DataContext _context;
-
-        public MatchController(DataContext context)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> GetMatchHistoryByUserId(IMatch repo, int activityId, int userId, DataContext context)
         {
-            _context = context;
+            var matches = await repo.GetUserMatches(activityId, userId);
+
+            if (matches == null || !matches.Any())
+            {
+                return TypedResults.NotFound("User has no matches in this activity.");
+            }
+
+            var userIds = matches.SelectMany(m => new[] { m.P1Id, m.P2Id }).Distinct();
+            var users = await context.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.Username); 
+
+            var matchHistory = matches.Select(m => new UserMatchesDTO
+            {
+                UserId = userId,
+                CreatedAt = m.CreatedAt,
+                EloChange = (m.P1Id == userId) ? m.EloChangeP1 : m.EloChangeP2,
+                Result = (m.P1Id == userId)
+                    ? (m.P1Result > m.P2Result ? "Won" : "Lost")
+                    : (m.P2Result > m.P1Result ? "Won" : "Lost"),
+                OpponentId = (m.P1Id == userId) ? m.P2Id : m.P1Id,
+                OpponentName = users.TryGetValue((m.P1Id == userId) ? m.P2Id : m.P1Id, out var name) ? name : " "
+            }).ToList();
+
+            return TypedResults.Ok(matchHistory);
         }
-        
+
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public static async Task<IResult> Create(IMatch repo, CreateMatchDTO dto, DataContext context)
+        public static async Task<IResult> Create(IMatch repo, CreateMatchDTO dto, DataContext context, EloCalculator calculator)
         {
             if (dto.P1Id == null || dto.P2Id == null || dto.ActivityId == null || dto.P1Result == null || dto.P2Result == null)
             {
                 return TypedResults.BadRequest("No empty fields allowed.");
             }
 
-            var p1Activity = await context.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == dto.P1Id && ua.ActivityId == dto.ActivityId);
-            var p2Activity = await context.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == dto.P2Id && ua.ActivityId == dto.ActivityId);
+            var p1Activity = await context.UserActivities
+                .FirstOrDefaultAsync(ua => ua.UserId == dto.P1Id && ua.ActivityId == dto.ActivityId);
+            var p2Activity = await context.UserActivities.
+                FirstOrDefaultAsync(ua => ua.UserId == dto.P2Id && ua.ActivityId == dto.ActivityId);
+
             if (p1Activity.Activity == null || p2Activity.User == null)
             {
                 TypedResults.NotFound("One of the users are not in the activity");
@@ -47,8 +70,8 @@ namespace competra.wwwapi.Controllers
             var p1OldElo = p1Activity.Elo;
             var p2OldElo = p2Activity.Elo;
 
-            var controller = new MatchController(context);
-            var (eloChangeP1, eloChangeP2, p1Expected, p2Expected) = await controller.CalculateEloChange(dto.P1Result, dto.P2Result, dto.P1Id, dto.P2Id, dto.ActivityId);
+            var (eloChangeP1, eloChangeP2, p1Expected, p2Expected) =
+              await calculator.CalculateEloChange(dto.P1Result, dto.P2Result, dto.P1Id, dto.P2Id, dto.ActivityId);
 
             var match = new Match
             {
@@ -64,8 +87,7 @@ namespace competra.wwwapi.Controllers
 
             var createdMatch = await repo.Create(match);
 
-            p1Activity = await context.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == dto.P1Id && ua.ActivityId == dto.ActivityId);
-            p2Activity = await context.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == dto.P2Id && ua.ActivityId == dto.ActivityId);
+
 
             return TypedResults.Ok(new
             {
@@ -77,50 +99,6 @@ namespace competra.wwwapi.Controllers
                 p1Expected,
                 p2Expected
             });
-        }
-
-        public async Task<(int, int, double, double)> CalculateEloChange(double p1Result, double p2Result, int p1Id, int p2Id, int activityId)
-        {
-            var p1Activity = await _context.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == p1Id && ua.ActivityId == activityId);
-            var p2Activity = await _context.UserActivities.FirstOrDefaultAsync(ua => ua.UserId == p2Id && ua.ActivityId == activityId);
-
-            if (p1Activity == null || p2Activity == null)
-            {
-                throw new Exception("UserActivity not found for one or both players.");
-            }
-
-            if (p1Result > p2Result)
-            {
-                p1Result = 1.0;
-                p2Result = 0.0;
-            }
-            else if (p1Result < p2Result)
-            {
-                p1Result = 0.0;
-                p2Result = 1.0;
-            }
-            else
-            {
-                p1Result = 0.5;
-                p2Result = 0.5;
-            }
-
-            double p1Elo = p1Activity.Elo;
-            double p2Elo = p2Activity.Elo;
-            int k = 32;
-            double p1Expected = 1 / (1 + Math.Pow(10, (p2Elo - p1Elo) / 400.0));
-            double p2Expected = 1 / (1 + Math.Pow(10, (p1Elo - p2Elo) / 400.0));
-            int p1Change = (int)(k * (p1Result - p1Expected));
-            int p2Change = (int)(k * (p2Result - p2Expected));
-
-            p1Activity.Elo += p1Change;
-            p2Activity.Elo += p2Change;
-
-            _context.UserActivities.Update(p1Activity);
-            _context.UserActivities.Update(p2Activity);
-            await _context.SaveChangesAsync();
-
-            return (p1Change, p2Change, p1Expected, p2Expected);
         }
     }
 }

@@ -25,11 +25,28 @@ namespace competra.wwwapi.Repositories.Repos
 
             return  match;
         }
-        public async Task<Models.Match> GetById(int matchId)
+        //public async Task<ICollection<Models.Match>> GetUserMatches(int userId, int activityId)
+        //{
+        //    return await _db.Matches.Include(m => m.Activity)
+        //.ThenInclude(a => a.UserActivities)
+        //.Where(m => (m.P1Id == userId || m.P2Id == userId) && m.Activity.Id == activityId) // Ensure the activity matches
+        //.ToListAsync();
+        //}
+        public async Task<ICollection<Models.Match>> GetUserMatches(int activityId, int userId)
         {
-            return await _db.Matches.FirstOrDefaultAsync(m => m.Id == matchId);
-        }
+            var matches = await _db.Matches
+         .Where(m => (m.P1Id == userId || m.P2Id == userId) && m.ActivityId == activityId) // <-- Added ActivityId filter
+         .ToListAsync();
 
+            Console.WriteLine($"Repository: Found {matches.Count} matches for User {userId} in Activity {activityId}");
+
+            foreach (var match in matches)
+            {
+                Console.WriteLine($"MatchId: {match.Id}, P1Id: {match.P1Id}, P2Id: {match.P2Id}, ActivityId: {match.ActivityId}");
+            }
+
+            return matches;
+        }
 
     }
 }
