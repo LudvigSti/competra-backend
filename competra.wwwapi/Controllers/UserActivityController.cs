@@ -2,6 +2,7 @@
 using competra.wwwapi.DTO;
 using competra.wwwapi.Models;
 using competra.wwwapi.Repositories.Interfaces;
+using competra.wwwapi.Repositories.Repos;
 using competra.wwwapi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,8 +17,25 @@ namespace competra.wwwapi.Controllers
             group.MapPut("/", Update);
             group.MapGet("/", GetAll);
             group.MapGet("/{activityId}/{userId}",CheckInActivity);
+            group.MapDelete("/{activityId}/{userId}",RemoveUser);
         }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private async static Task<IResult> RemoveUser(IUserActivity repo, int activityId, int userId)
+        {
+            bool userExists = await repo.CheckIfInActivity(activityId, userId);
 
+            if (!userExists)
+            {
+                return TypedResults.NotFound("User is not in the specified activity.");
+            }
+
+            await repo.DeleteUser(activityId, userId);
+            return TypedResults.Ok("User successfully removed from the activity.");
+
+        }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> CheckInActivity(IUserActivity repo, int activityId, int userId)
         {
             bool inGroup = await repo.CheckIfInActivity(activityId, userId); 
@@ -63,7 +81,7 @@ namespace competra.wwwapi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> Create(IUserActivity repo, CreateUserActivityDTO dto)
         {
-            var userActivity = new UserActivity
+            var userActivity = new Models.UserActivity
             {
                 UserId = dto.UserId,
                 ActivityId = dto.ActivityId,

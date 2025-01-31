@@ -52,5 +52,19 @@ namespace competra.wwwapi.Repositories.Repos
                     .AnyAsync(ua => ua.ActivityId == activityId && ua.UserId == userId);
         }
 
+        public async Task DeleteUser(int activityId, int userId)
+        {
+            var userActivity = await _db.UserActivities
+        .FirstOrDefaultAsync(ua => ua.ActivityId == activityId && ua.UserId == userId);
+
+            if (userActivity == null)
+            {
+                return; 
+            }
+
+            _db.UserActivities.Remove(userActivity);
+            await _db.SaveChangesAsync(); 
+
+        }
     }
 }
