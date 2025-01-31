@@ -15,6 +15,17 @@ namespace competra.wwwapi.Controllers
             group.MapPost("/", Create);
             group.MapPut("/", Update);
             group.MapGet("/", GetAll);
+            group.MapGet("/{activityId}/{userId}",CheckInActivity);
+        }
+
+        private static async Task<IResult> CheckInActivity(IUserActivity repo, int activityId, int userId)
+        {
+            bool inGroup = await repo.CheckIfInActivity(activityId, userId); 
+            if (!inGroup)
+            {
+                return TypedResults.NotFound(inGroup);
+            }
+            return TypedResults.Ok(inGroup);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
