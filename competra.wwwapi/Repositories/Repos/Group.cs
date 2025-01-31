@@ -20,6 +20,10 @@ namespace competra.wwwapi.Repositories.Repos
             var unJoinedGroups =  _db.Groups.Where(g => !joinedGroups.Contains(g.Id));
             return await unJoinedGroups.ToListAsync();
         }
+        public async Task<Models.Group> GetGroup(int groupId)
+        {
+            return await _db.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
+        }
 
 
 

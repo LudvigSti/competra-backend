@@ -12,8 +12,30 @@ namespace competra.wwwapi.Controllers
         {
             var group = app.MapGroup("group");
             group.MapGet("/", GetAll);
-            group.MapGet("/{userId}", GetAllUnjoined);
+            group.MapGet("/unjoined/{userId}", GetAllUnjoined);
+            group.MapGet("/{groupId}", GetGroup);
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        private static async Task<IResult> GetGroup(IGroup repo, int groupId)
+        {
+            var group = await repo.GetGroup(groupId);
+            if (group == null )
+            {
+                return TypedResults.BadRequest("Group does not exist ");
+            }
+            var groupDTO =  new GetOneGroupDTO
+            {
+                GroupName = group.GroupName,
+                Id = group.Id,
+                LogoUrl = group.LogoUrl,
+                CreatedAt = group.CreatedAt
+
+            };
+            return TypedResults.Ok(groupDTO);
+        }
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetAll(IGroup repo)
