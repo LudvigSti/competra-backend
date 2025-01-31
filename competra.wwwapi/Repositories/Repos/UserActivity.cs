@@ -43,5 +43,14 @@ namespace competra.wwwapi.Repositories.Repos
             return userActivity;
             
         }
+
+        public async Task<bool> CheckIfInActivity(int activityId, int userId)
+        {
+            return await _db.UserActivities
+                .Include(ua=> ua.Activity)
+                .Include(ua => ua.User)
+                    .AnyAsync(ua => ua.ActivityId == activityId && ua.UserId == userId);
+        }
+
     }
 }
