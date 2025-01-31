@@ -6,6 +6,7 @@ namespace competra.wwwapi.Repositories.Interfaces
     {
         Task<ICollection<Group>> GetAll();
         Task<ICollection<Group>> GetAllUnjoinedGroups(int userId);
+        Task<Group> GetGroup(int groupId);
 
     }
 }

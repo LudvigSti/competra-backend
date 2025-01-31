@@ -16,6 +16,8 @@ namespace competra.wwwapi.Controllers
             group.MapPost("/", Create);
             group.MapGet("/{activityId}/{userId}", GetMatchHistoryByUserId);
         }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetMatchHistoryByUserId(IMatch repo, int activityId, int userId, DataContext context)
         {
             var matches = await repo.GetUserMatches(activityId, userId);
@@ -28,7 +30,7 @@ namespace competra.wwwapi.Controllers
             var userIds = matches.SelectMany(m => new[] { m.P1Id, m.P2Id }).Distinct();
             var users = await context.Users
                 .Where(u => userIds.Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id, u => u.Username); // Assuming 'Name' exists in User model
+                .ToDictionaryAsync(u => u.Id, u => u.Username); 
 
             var matchHistory = matches.Select(m => new UserMatchesDTO
             {
