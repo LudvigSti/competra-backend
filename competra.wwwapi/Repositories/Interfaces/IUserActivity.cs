@@ -9,5 +9,6 @@ namespace competra.wwwapi.Repositories.Interfaces
         Task<UserActivity> GetById(int id);
         Task<UserActivity> Update(UserActivity userActivity);
         Task<bool> CheckIfInActivity(int userActivityId, int userId);
+        Task DeleteUser(int userActivityId, int userId);
     }
 }
