@@ -16,9 +16,50 @@ namespace competra.wwwapi.Controllers
             group.MapPost("/", Create);
             group.MapPut("/", Update);
             group.MapGet("/", GetAll);
-            group.MapGet("/{activityId}/{userId}",CheckInActivity);
+            group.MapGet("/IfInActivity{activityId}/{userId}",CheckInActivity);
+            group.MapGet("/{userId}", GetUseractivityById);
             group.MapDelete("/{activityId}/{userId}",RemoveUser);
+            group.MapGet("/UserActivities/{userId}", GetAllActivities);
         }
+
+        private static async Task<IResult> GetAllActivities(IUserActivity repo, int userId)
+        {
+            var UserActivities = await repo.AllUserActivitiesById(userId);
+            if(UserActivities == null)
+            {
+                return TypedResults.NotFound("Not in any activity yet");
+            }
+            var userActDTO = UserActivities.Select(ua => new GetUserinActivity
+            {
+                UserId = ua.UserId,
+                ActivityName = ua.Activity.ActivityName,
+                Elo = ua.Elo,
+                UserName = ua.User.Username
+
+            });
+            return TypedResults.Ok(userActDTO);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task <IResult> GetUseractivityById(IUserActivity repo, int userId)
+        {
+            var user = await repo.GetByUserById(userId);
+            if (user == null)
+            {
+                return TypedResults.NotFound("User not in activity or wrong userId");
+            }
+            var userDTO = new GetUserinActivity
+            {
+                UserName = user.User.Username,
+                Elo = user.Elo,
+                UserId = user.UserId,
+                ActivityName = user.Activity.ActivityName
+            };
+            return TypedResults.Ok(userDTO);
+
+        }
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private async static Task<IResult> RemoveUser(IUserActivity repo, int activityId, int userId)
