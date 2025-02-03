@@ -66,5 +66,15 @@ namespace competra.wwwapi.Repositories.Repos
             await _db.SaveChangesAsync(); 
 
         }
+
+        public async Task<Models.UserActivity> GetByUserById(int id)
+        {
+            return await _db.UserActivities.Include(ua => ua.User).Include(ua => ua.Activity).FirstOrDefaultAsync(ua => ua.User.Id == id);
+        }
+
+        public async Task<ICollection<Models.UserActivity>> AllUserActivitiesById(int id)
+        {
+            return await _db.UserActivities.Include(ua => ua.Activity).Include(u => u.User).Where(ua => ua.UserId == id).ToListAsync();
+        }
     }
 }
