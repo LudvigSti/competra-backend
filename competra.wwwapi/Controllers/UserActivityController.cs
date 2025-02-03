@@ -16,7 +16,7 @@ namespace competra.wwwapi.Controllers
             group.MapPost("/", Create);
             group.MapPut("/", Update);
             group.MapGet("/", GetAll);
-            group.MapGet("/IfInActivity{activityId}/{userId}",CheckInActivity);
+            group.MapGet("/IfInActivity/{activityId}/{userId}",CheckInActivity);
             group.MapGet("/{userId}", GetUseractivityById);
             group.MapDelete("/{activityId}/{userId}",RemoveUser);
             group.MapGet("/UserActivities/{userId}", GetAllActivities);
