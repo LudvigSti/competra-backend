@@ -17,6 +17,7 @@ namespace competra.wwwapi.Controllers
             group.MapGet("/{activityId}/{userId}", GetMatchHistoryByUserIdAndActivityId);
             group.MapGet("/{userId}", GetMatchHistoryByUserId);
             group.MapGet("/activity/{activityId}", GetMatchHistoryByActivityId);
+            group.MapGet("/group/{groupId}", GetMatchHistoryByGroupId);
             
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -97,7 +98,6 @@ namespace competra.wwwapi.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public static async Task<IResult> GetMatchHistoryByActivityId(IMatch repo, int activityId, DataContext context)
         {
 
@@ -133,6 +133,33 @@ namespace competra.wwwapi.Controllers
             }).ToList();
 
             return TypedResults.Ok(matchHistory);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> GetMatchHistoryByGroupId(IMatch repo, int groupId, DataContext context)
+        {
+            var matches = await repo.GetUserMatchesByGroupId(groupId);
+
+            if (matches == null || !matches.Any())
+            {
+                return TypedResults.NotFound("No matches found for this group");
+            }
+
+            var matchDTOs = matches.Select(m => new GetMatchDTO
+            {
+                Id = m.Id,
+                P1Name = m.P1.Username,
+                P2Name = m.P2.Username,
+                ActivityName = m.Activity.ActivityName,
+                CreatedAt = m.CreatedAt,
+                P1Result = m.P1Result.ToString(),
+                P2Result = m.P2Result.ToString(),
+                EloChangeP1 = m.EloChangeP1,
+                EloChangeP2 = m.EloChangeP2
+            }).ToList();
+
+            return TypedResults.Ok(matchDTOs);
         }
 
 

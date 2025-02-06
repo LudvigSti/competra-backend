@@ -78,6 +78,37 @@ namespace competra.wwwapi.Repositories.Repos
             return matches;
         }
 
+        public async Task<ICollection<Models.Match>> GetUserMatchesByGroupId(int groupId)
+        {
+            // Find all activities with the specified groupId
+            var activities = await _db.Activities
+                .Where(a => a.GroupId == groupId)
+                .ToListAsync();
+
+            var matches = new List<Models.Match>();
+
+            // For each activity, find all matches
+            foreach (var activity in activities)
+            {
+                var activityMatches = await _db.Matches
+                    .Where(m => m.ActivityId == activity.Id)
+                    .Include(m => m.P1) // Include Player 1
+                    .Include(m => m.P2) // Include Player 2
+                    .Include(m => m.Activity) // Include Activity
+                    .ToListAsync();
+
+                matches.AddRange(activityMatches);
+            }
+
+            // Order all matches by CreatedAt in descending order and take the last 3 matches
+            var lastMatches = matches
+                .OrderByDescending(m => m.CreatedAt)
+                .Take(3)
+                .ToList();
+
+            return lastMatches;
+        }
+
 
     }
 }
