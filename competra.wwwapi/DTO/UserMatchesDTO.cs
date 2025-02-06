@@ -5,6 +5,10 @@ namespace competra.wwwapi.DTO
     public class UserMatchesDTO
     {
         public int UserId { get; set; }
+
+        public int ActivityId { get; set; }
+
+        public string ActivityName { get; set; }
         public DateTime CreatedAt { get; set; }
        public string OpponentName { get; set; }
         public int OpponentId { get; set; }

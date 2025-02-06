@@ -8,6 +8,9 @@ namespace competra.wwwapi.Repositories.Interfaces
     {
         Task<ICollection<Match>> GetAll();
         Task<ICollection<Match>> GetUserMatches(int activityId, int userId);
+        Task<ICollection<Match>> GetUserMatchesByUserId(int userId);
+        Task<ICollection<Match>> GetUserMatchesByActivityId(int activityId);
         Task<Match> Create(Match match);
+
     }
 }

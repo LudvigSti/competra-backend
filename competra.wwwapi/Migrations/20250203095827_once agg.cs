@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace competra.wwwapi.Migrations
 {
     /// <inheritdoc />
-    public partial class FInal : Migration
+    public partial class onceagg : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
