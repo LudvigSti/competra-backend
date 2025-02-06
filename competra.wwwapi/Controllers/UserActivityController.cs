@@ -126,7 +126,7 @@ namespace competra.wwwapi.Controllers
             {
                 UserId = dto.UserId,
                 ActivityId = dto.ActivityId,
-                Elo = 1000,
+                Elo = 1000
             
             };
 
