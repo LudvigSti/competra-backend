@@ -40,13 +40,11 @@ namespace competra.wwwapi.Controllers
             double p1Elo = p1Activity.Elo;
             double p2Elo = p2Activity.Elo;
 
-            // Get match count for both players
-            int p1Matches = await _context.Matches.CountAsync(m => m.P1Id == p1Id || m.P2Id == p1Id);
-            int p2Matches = await _context.Matches.CountAsync(m => m.P1Id == p2Id || m.P2Id == p2Id);
+           
 
             // Determine K-factor for both players
-            int k1 = GetKFactor(p1Elo, p1Matches);
-            int k2 = GetKFactor(p2Elo, p2Matches);
+            int k1 = GetKFactor(p1Elo);
+            int k2 = GetKFactor(p2Elo);
 
             // Calculate expected scores
             double p1Expected = 1 / (1 + Math.Pow(10, (p2Elo - p1Elo) / 400.0));
@@ -67,16 +65,16 @@ namespace competra.wwwapi.Controllers
             return (p1Change, p2Change, p1Expected, p2Expected);
 
         }
-        private int GetKFactor(double elo, int matches)
+        private int GetKFactor(double elo)
         {
-            if (elo < 2300 && matches < 30)
+            if (elo < 2300 )
                 return 40;
             else if (elo < 2400)
                 return 20;
-            else if (matches >= 30 && elo >= 2400)
+            else if ( elo >= 2400)
                 return 10;
 
-            return 20; // Default K-factor
+            return 20; 
         }
 
     }
