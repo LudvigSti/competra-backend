@@ -13,7 +13,7 @@ namespace competra.wwwapi.Controllers
         {
             var group = app.MapGroup("user");
             group.MapGet("/", GetAll);
-            group.MapGet("/{id}", GetUserById);
+            group.MapGet("/{userId}", GetUserById);
             group.MapPost("/register", Register);
             group.MapPost("/login", Login);
             group.MapPut("/", Update);
@@ -112,7 +112,7 @@ namespace competra.wwwapi.Controllers
             // Log the exception (ex) here if needed
             return TypedResults.Problem("An error occurred while retrieving the user.");
         }
-}
+       }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
