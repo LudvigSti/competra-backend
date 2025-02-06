@@ -13,7 +13,7 @@ namespace competra.wwwapi.Controllers
         {
             var group = app.MapGroup("user");
             group.MapGet("/", GetAll);
-            group.MapPost("/{id}", GetUserById);
+            group.MapGet("/{id}", GetUserById);
             group.MapPost("/register", Register);
             group.MapPost("/login", Login);
             group.MapPut("/", Update);
@@ -100,7 +100,7 @@ namespace competra.wwwapi.Controllers
         {
         try
         {
-            var user = await repo.GetById(userId);
+            var user = await repo.GetByUserId(userId);
             if (user == null)
             {
                 return TypedResults.NotFound();
