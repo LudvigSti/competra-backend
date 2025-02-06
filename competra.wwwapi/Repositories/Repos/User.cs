@@ -25,7 +25,7 @@ namespace competra.wwwapi.Repositories.Repos
 
             return  user;
         }
-        public async Task<Models.User> GetById(int userId)
+        public async Task<Models.User> GetByUserId(int userId)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
