@@ -12,8 +12,8 @@ using competra.wwwapi.Data;
 namespace competra.wwwapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250130104930_prod")]
-    partial class prod
+    [Migration("20250203095827_once agg")]
+    partial class onceagg
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

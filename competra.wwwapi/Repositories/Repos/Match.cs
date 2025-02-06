@@ -23,7 +23,7 @@ namespace competra.wwwapi.Repositories.Repos
 
             await _db.SaveChangesAsync();
 
-            return  match;
+            return match;
         }
         //public async Task<ICollection<Models.Match>> GetUserMatches(int userId, int activityId)
         //{
@@ -47,6 +47,37 @@ namespace competra.wwwapi.Repositories.Repos
 
             return matches;
         }
+
+        public async Task<ICollection<Models.Match>> GetUserMatchesByUserId(int userId)
+        {
+            var matches = await _db.Matches
+                .Where(m => m.P1Id == userId || m.P2Id == userId)
+                .ToListAsync();
+
+            Console.WriteLine($"Repository: Found {matches.Count} matches for User {userId}");
+
+            foreach (var match in matches)
+            {
+                Console.WriteLine($"MatchId: {match.Id}, P1Id: {match.P1Id}, P2Id: {match.P2Id}, ActivityId: {match.Activity}");
+            }
+            return matches;
+        }
+
+        public async Task<ICollection<Models.Match>> GetUserMatchesByActivityId(int activityId)
+        {
+            var matches = await _db.Matches
+                .Where(m => m.ActivityId == activityId)
+                .ToListAsync();
+
+            Console.WriteLine($"Repository: Found {matches.Count} matches for Activity {activityId}");
+
+            foreach (var match in matches)
+            {
+                Console.WriteLine($"MatchId: {match.Id}, P1Id: {match.P1Id}, P2Id: {match.P2Id}, ActivityId: {match.ActivityId}");
+            }
+            return matches;
+        }
+
 
     }
 }

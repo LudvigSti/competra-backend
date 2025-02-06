@@ -14,11 +14,14 @@ namespace competra.wwwapi.Controllers
         {
             var group = app.MapGroup("match");
             group.MapPost("/", Create);
-            group.MapGet("/{activityId}/{userId}", GetMatchHistoryByUserId);
+            group.MapGet("/{activityId}/{userId}", GetMatchHistoryByUserIdAndActivityId);
+            group.MapGet("/{userId}", GetMatchHistoryByUserId);
+            group.MapGet("/activity/{activityId}", GetMatchHistoryByActivityId);
+            
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetMatchHistoryByUserId(IMatch repo, int activityId, int userId, DataContext context)
+        private static async Task<IResult> GetMatchHistoryByUserIdAndActivityId(IMatch repo, int activityId, int userId, DataContext context)
         {
             var matches = await repo.GetUserMatches(activityId, userId);
 
@@ -30,11 +33,18 @@ namespace competra.wwwapi.Controllers
             var userIds = matches.SelectMany(m => new[] { m.P1Id, m.P2Id }).Distinct();
             var users = await context.Users
                 .Where(u => userIds.Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id, u => u.Username); 
+                .ToDictionaryAsync(u => u.Id, u => u.Username);
+
+            var actitivy = await context.Activities
+                .Where(a => a.Id == activityId)
+                .Select(a => a.ActivityName)
+                .FirstOrDefaultAsync();
 
             var matchHistory = matches.Select(m => new UserMatchesDTO
             {
                 UserId = userId,
+                ActivityId = activityId,
+                ActivityName = actitivy,
                 CreatedAt = m.CreatedAt,
                 EloChange = (m.P1Id == userId) ? m.EloChangeP1 : m.EloChangeP2,
                 Result = (m.P1Id == userId)
@@ -42,6 +52,84 @@ namespace competra.wwwapi.Controllers
                     : (m.P2Result > m.P1Result ? "Won" : "Lost"),
                 OpponentId = (m.P1Id == userId) ? m.P2Id : m.P1Id,
                 OpponentName = users.TryGetValue((m.P1Id == userId) ? m.P2Id : m.P1Id, out var name) ? name : " "
+            }).ToList();
+
+            return TypedResults.Ok(matchHistory);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public static async Task<IResult> GetMatchHistoryByUserId(IMatch repo, int userId, DataContext context)
+        {
+            var matches = await repo.GetUserMatchesByUserId(userId);
+
+            if (matches == null || !matches.Any()){
+                return TypedResults.NotFound("User has no matches");
+            }
+
+            var userIds = matches.SelectMany(m => new[] { m.P1Id, m.P2Id }).Distinct();
+            var users = await context.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.Username);
+
+            var activityIds = matches.Select(m => m.ActivityId).Distinct();
+            var activities = await context.Activities
+                .Where(a => activityIds.Contains(a.Id))
+                .ToDictionaryAsync(a => a.Id, a => a.ActivityName);
+
+            var matchHistory = matches.Select(m => new UserMatchesDTO
+            {
+                UserId = userId,
+                ActivityId = m.ActivityId,
+                ActivityName = activities.TryGetValue(m.ActivityId, out var name) ? name: "Unkonwn",
+                CreatedAt = m.CreatedAt,
+                EloChange = (m.P1Id == userId) ? m.EloChangeP1 : m.EloChangeP2,
+                Result = (m.P1Id == userId)
+                ? (m.P1Result > m.P2Result ? "Won" : "Lost")
+                : (m.P2Result > m.P1Result ? "Won" : "Lost"),
+                OpponentId = (m.P1Id == userId) ? m.P2Id : m.P1Id,
+                OpponentName = users.TryGetValue((m.P1Id == userId) ? m.P2Id : m.P1Id, out var opponentName) ? opponentName : " "
+            }).ToList();
+
+            return TypedResults.Ok(matchHistory);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public static async Task<IResult> GetMatchHistoryByActivityId(IMatch repo, int activityId, DataContext context)
+        {
+
+           var matches = await repo.GetUserMatchesByActivityId(activityId);
+
+            if (matches == null || !matches.Any())
+            {
+                return TypedResults.NotFound("No matches found for this activity");
+            }
+
+            var userIds = matches.SelectMany(m => new[] { m.P1Id, m.P2Id }).Distinct();
+            var users = await context.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.Username);
+
+            var activity = await context.Activities
+                .Where(a => a.Id == activityId)
+                .Select(a => a.ActivityName)
+                .FirstOrDefaultAsync();
+
+            var matchHistory = matches.Select(m => new UserMatchesDTO
+            {
+                UserId = m.P1Id,
+                ActivityId = activityId,
+                ActivityName = activity,
+                CreatedAt = m.CreatedAt,
+                EloChange = (m.P1Id == m.P1Id) ? m.EloChangeP1 : m.EloChangeP2,
+                Result = (m.P1Id == m.P1Id)
+                ? (m.P1Result > m.P2Result ? "Won" : "Lost")
+                : (m.P2Result > m.P1Result ? "Won" : "Lost"),
+                OpponentId = (m.P1Id == m.P1Id) ? m.P2Id : m.P1Id,
+                OpponentName = users.TryGetValue((m.P1Id == m.P1Id) ? m.P2Id : m.P1Id, out var name) ? name : " "
             }).ToList();
 
             return TypedResults.Ok(matchHistory);
